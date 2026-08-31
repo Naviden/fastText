@@ -21,8 +21,10 @@ In this document we present how to use fastText in python.
 
 # Requirements
 
-[fastText](https://fasttext.cc/) builds on modern Mac OS and Linux distributions.
-Since it uses C\++11 features, it requires a compiler with good C++11 support. You will need [Python](https://www.python.org/) (version 2.7 or ≥ 3.4), [NumPy](http://www.numpy.org/) & [SciPy](https://www.scipy.org/) and [pybind11](https://github.com/pybind/pybind11).
+[fastText](https://fasttext.cc/) builds on Linux, macOS, and Windows.
+It requires a compiler with C\++17 support, [Python](https://www.python.org/)
+3.10 or newer, [NumPy](https://numpy.org/), and
+[pybind11](https://github.com/pybind/pybind11).
 
 
 # Installation
@@ -164,7 +166,11 @@ For further reading on quantization, you can refer to [this paragraph from our b
 
 In general it is important to properly preprocess your data. In particular our example scripts in the [root folder](https://github.com/facebookresearch/fastText) do this.
 
-fastText assumes UTF-8 encoded text. All text must be [unicode for Python2](https://docs.python.org/2/library/functions.html#unicode) and [str for Python3](https://docs.python.org/3.5/library/stdtypes.html#textseq). The passed text will be [encoded as UTF-8 by pybind11](https://pybind11.readthedocs.io/en/master/advanced/cast/strings.html?highlight=utf-8#strings-bytes-and-unicode-conversions) before passed to the fastText C++ library. This means it is important to use UTF-8 encoded text when building a model. On Unix-like systems you can convert text using [iconv](https://en.wikipedia.org/wiki/Iconv).
+fastText assumes UTF-8 encoded text. All text must be Python `str` values. The
+passed text is [encoded as UTF-8 by pybind11](https://pybind11.readthedocs.io/en/stable/advanced/cast/strings.html)
+before it is passed to the fastText C++ library. This means it is important to
+use UTF-8 encoded text when building a model. On Unix-like systems you can
+convert text using [iconv](https://en.wikipedia.org/wiki/Iconv).
 
 fastText will tokenize (split text into pieces) based on the following ASCII characters (bytes). In particular, it is not aware of UTF-8 whitespace. We advice the user to convert UTF-8 whitespace / word boundaries into one of the following symbols as appropiate.
 

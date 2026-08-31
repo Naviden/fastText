@@ -19,7 +19,13 @@ jobs:
             numpy-version: "1.26.*"
           - python-version: "3.10"
             numpy-version: "2.*"
+          - python-version: "3.11"
+            numpy-version: "2.*"
+          - python-version: "3.12"
+            numpy-version: "2.*"
           - python-version: "3.13"
+            numpy-version: "2.*"
+          - python-version: "3.14"
             numpy-version: "2.*"
 
     steps:
@@ -33,5 +39,5 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install "numpy==${{ matrix.numpy-version }}"
           python -m pip install --no-deps .
-      - name: Run NumPy compatibility tests
+      - name: Run Python API regression tests
         run: python -m unittest tests/test_numpy_compatibility.py
