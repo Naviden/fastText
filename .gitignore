@@ -10,3 +10,7 @@ result
 website/node_modules/
 package-lock.json
 node_modules/
+build/
+dist/
+*.egg-info/
+wheelhouse/
