@@ -6,8 +6,11 @@
 # LICENSE file in the root directory of this source tree.
 #
 
-CXX = c++
-CXXFLAGS = -pthread -std=c++17 -march=native
+CXX ?= c++
+CXXFLAGS += -pthread -std=c++17
+ifeq ($(NATIVE),1)
+CXXFLAGS += -march=native
+endif
 OBJS = args.o autotune.o matrix.o dictionary.o loss.o productquantizer.o densematrix.o quantmatrix.o vector.o model.o utils.o meter.o fasttext.o
 INCLUDES = -I.
 
@@ -66,7 +69,7 @@ fasttext.o: src/fasttext.cc src/*.h
 	$(CXX) $(CXXFLAGS) -c src/fasttext.cc
 
 fasttext: $(OBJS) src/fasttext.cc src/main.cc
-	$(CXX) $(CXXFLAGS) $(OBJS) src/main.cc -o fasttext
+	$(CXX) $(CXXFLAGS) $(LDFLAGS) $(OBJS) src/main.cc $(LDLIBS) -o fasttext
 
 clean:
 	rm -rf *.o *.gcno *.gcda fasttext *.bc webassembly/fasttext_wasm.js webassembly/fasttext_wasm.wasm
@@ -121,5 +124,4 @@ fasttext.bc: src/fasttext.cc src/*.h
 
 webassembly/fasttext_wasm.js: $(EMOBJS) webassembly/fasttext_wasm.cc Makefile
 	$(EMCXX) $(EMCXXFLAGS) $(EMOBJS) -o webassembly/fasttext_wasm.js
-
 

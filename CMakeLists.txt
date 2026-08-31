@@ -1,23 +1,20 @@
-#
 # Copyright (c) 2016-present, Facebook, Inc.
 # All rights reserved.
 #
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
-#
 
-cmake_minimum_required(VERSION 2.8.9)
-project(fasttext)
+cmake_minimum_required(VERSION 3.16)
+project(fasttext VERSION 0.9.2 LANGUAGES CXX)
 
-set(CMAKE_CXX_STANDARD 17)
+include(GNUInstallDirs)
+find_package(Threads REQUIRED)
 
-# The version number.
-set (fasttext_VERSION_MAJOR 0)
-set (fasttext_VERSION_MINOR 1)
-
-include_directories(fasttext)
-
-set(CMAKE_CXX_FLAGS " -pthread -std=c++17 -funroll-loops -O3 -march=native")
+option(
+  FASTTEXT_NATIVE
+  "Optimize for the build machine instead of producing portable binaries"
+  OFF
+)
 
 set(HEADER_FILES
     src/args.h
@@ -42,7 +39,6 @@ set(SOURCE_FILES
     src/dictionary.cc
     src/fasttext.cc
     src/loss.cc
-    src/main.cc
     src/matrix.cc
     src/meter.cc
     src/model.cc
@@ -51,30 +47,74 @@ set(SOURCE_FILES
     src/utils.cc
     src/vector.cc)
 
+function(configure_fasttext_target target)
+  target_compile_features(${target} PUBLIC cxx_std_17)
+  set_target_properties(${target} PROPERTIES CXX_EXTENSIONS OFF)
+  target_include_directories(
+    ${target}
+    PUBLIC
+      $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>
+      $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/fasttext>
+  )
+  target_link_libraries(${target} PUBLIC Threads::Threads)
 
-if (NOT MSVC)
-  include(GNUInstallDirs)
-  configure_file("fasttext.pc.in" "fasttext.pc" @ONLY)
-  install(FILES "${CMAKE_BINARY_DIR}/fasttext.pc" DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig)
-endif()
+  if(FASTTEXT_NATIVE AND NOT MSVC)
+    target_compile_options(${target} PRIVATE -march=native)
+  endif()
+endfunction()
 
 add_library(fasttext-shared SHARED ${SOURCE_FILES} ${HEADER_FILES})
 add_library(fasttext-static STATIC ${SOURCE_FILES} ${HEADER_FILES})
-add_library(fasttext-static_pic STATIC ${SOURCE_FILES} ${HEADER_FILES})
-set_target_properties(fasttext-shared PROPERTIES OUTPUT_NAME fasttext
-  SOVERSION "${fasttext_VERSION_MAJOR}")
+add_library(fasttext-static-pic STATIC ${SOURCE_FILES} ${HEADER_FILES})
+
+foreach(target fasttext-shared fasttext-static fasttext-static-pic)
+  configure_fasttext_target(${target})
+endforeach()
+
+set_target_properties(
+  fasttext-shared
+  PROPERTIES
+    OUTPUT_NAME fasttext
+    VERSION ${PROJECT_VERSION}
+    SOVERSION ${PROJECT_VERSION_MAJOR}
+    WINDOWS_EXPORT_ALL_SYMBOLS ON
+)
 set_target_properties(fasttext-static PROPERTIES OUTPUT_NAME fasttext)
-set_target_properties(fasttext-static_pic PROPERTIES OUTPUT_NAME fasttext_pic
-  POSITION_INDEPENDENT_CODE True)
+set_target_properties(
+  fasttext-static-pic
+  PROPERTIES
+    OUTPUT_NAME fasttext_pic
+    POSITION_INDEPENDENT_CODE ON
+)
+
 add_executable(fasttext-bin src/main.cc)
-target_link_libraries(fasttext-bin pthread fasttext-static)
-set_target_properties(fasttext-bin PROPERTIES PUBLIC_HEADER "${HEADER_FILES}" OUTPUT_NAME fasttext)
-install (TARGETS fasttext-shared
-    LIBRARY DESTINATION lib)
-install (TARGETS fasttext-static
-    ARCHIVE DESTINATION lib)
-install (TARGETS fasttext-static_pic
-    ARCHIVE DESTINATION lib)
-install (TARGETS fasttext-bin
-    RUNTIME DESTINATION bin
- PUBLIC_HEADER DESTINATION include/fasttext)
+target_compile_features(fasttext-bin PRIVATE cxx_std_17)
+set_target_properties(
+  fasttext-bin
+  PROPERTIES
+    CXX_EXTENSIONS OFF
+    OUTPUT_NAME fasttext
+)
+target_link_libraries(fasttext-bin PRIVATE fasttext-static)
+
+if(NOT MSVC)
+  configure_file(fasttext.pc.in fasttext.pc @ONLY)
+  install(
+    FILES ${CMAKE_CURRENT_BINARY_DIR}/fasttext.pc
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig
+  )
+endif()
+
+install(
+  TARGETS fasttext-shared fasttext-static fasttext-static-pic fasttext-bin
+  EXPORT fasttextTargets
+  RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+  LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+  ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+)
+install(FILES ${HEADER_FILES} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/fasttext)
+install(
+  EXPORT fasttextTargets
+  NAMESPACE fasttext::
+  DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/fasttext
+)
