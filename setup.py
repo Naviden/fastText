@@ -17,7 +17,6 @@ from setuptools.command.build_ext import build_ext
 import sys
 import setuptools
 import os
-import subprocess
 import platform
 import io
 
@@ -28,19 +27,9 @@ FASTTEXT_SRC = "src"
 
 
 class get_pybind_include:
-    """Helper class to determine the pybind11 include path
-
-    The purpose of this class is to postpone importing pybind11
-    until it is actually installed, so that the ``get_include()``
-    method can be invoked."""
+    """Resolve pybind11's include path after build dependencies are installed."""
 
     def __init__(self, user=False):
-        try:
-            pass
-        except ImportError:
-            if subprocess.call([sys.executable, "-m", "pip", "install", "pybind11"]):
-                raise RuntimeError("pybind11 install failed.")
-
         self.user = user
 
     def __str__(self):
@@ -182,7 +171,6 @@ setup(
         "Development Status :: 3 - Alpha",
         "Intended Audience :: Developers",
         "Intended Audience :: Science/Research",
-        "License :: OSI Approved :: MIT License",
         "Programming Language :: Python :: 2.7",
         "Programming Language :: Python :: 3.4",
         "Programming Language :: Python :: 3.5",
@@ -194,7 +182,7 @@ setup(
         "Operating System :: Unix",
         "Operating System :: MacOS",
     ],
-    install_requires=["pybind11>=2.2", "setuptools >= 0.7.0", "numpy"],
+    install_requires=["numpy"],
     cmdclass={"build_ext": BuildExt},
     packages=[
         str("fasttext"),
