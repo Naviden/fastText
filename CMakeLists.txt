@@ -87,6 +87,12 @@ set_target_properties(
     POSITION_INDEPENDENT_CODE ON
 )
 
+if(WIN32)
+  # A shared library's import library and a static library cannot both be
+  # named fasttext.lib in the same build directory.
+  set_target_properties(fasttext-static PROPERTIES OUTPUT_NAME fasttext_static)
+endif()
+
 add_executable(fasttext-bin src/main.cc)
 target_compile_features(fasttext-bin PRIVATE cxx_std_17)
 set_target_properties(
