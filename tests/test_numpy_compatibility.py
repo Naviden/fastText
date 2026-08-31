@@ -58,6 +58,9 @@ class FakePredictor:
 
 
 class NumpyCompatibilityTest(unittest.TestCase):
+    def test_default_thread_count_is_always_positive(self):
+        self.assertGreaterEqual(FastText.unsupervised_default["thread"], 1)
+
     def test_meter_results_allow_numpy_to_copy(self):
         meter = FastText._Meter(FakeModel(), FakeMeter())
 

@@ -17,7 +17,6 @@ from setuptools.command.build_ext import build_ext
 import sys
 import setuptools
 import os
-import platform
 import io
 
 __version__ = "0.9.2"
@@ -46,11 +45,10 @@ else:
     del sys.argv[coverage_index]
     coverage = True
 
-fasttext_src_files = map(str, os.listdir(FASTTEXT_SRC))
-fasttext_src_cc = list(filter(lambda x: x.endswith(".cc"), fasttext_src_files))
-
-fasttext_src_cc = list(
-    map(lambda x: str(os.path.join(FASTTEXT_SRC, x)), fasttext_src_cc)
+fasttext_src_cc = sorted(
+    os.path.join(FASTTEXT_SRC, filename)
+    for filename in os.listdir(FASTTEXT_SRC)
+    if filename.endswith(".cc") and filename != "main.cc"
 )
 
 ext_modules = [
@@ -68,17 +66,10 @@ ext_modules = [
             FASTTEXT_SRC,
         ],
         language="c++",
-        extra_compile_args=[
-            "-O0 -fno-inline -fprofile-arcs -pthread -march=native"
-            if coverage
-            else "-O3 -funroll-loops -pthread -march=native"
-        ],
     ),
 ]
 
 
-# As of Python 3.6, CCompiler has a `has_flag` method.
-# cf http://bugs.python.org/issue26689
 def has_flag(compiler, flags):
     """Return a boolean indicating whether a flag name is supported on
     the specified compiler.
@@ -107,31 +98,19 @@ class BuildExt(build_ext):
     """A custom build extension for adding compiler-specific options."""
 
     c_opts = {
-        "msvc": ["/EHsc"],
-        "unix": [],
+        "msvc": ["/EHsc", "/std:c++17"],
+        "unix": ["-O3", "-funroll-loops", "-pthread"],
     }
 
     def build_extensions(self):
-        if sys.platform == "darwin":
-            mac_osx_version = float(".".join(platform.mac_ver()[0].split(".")[:2]))
-            os.environ["MACOSX_DEPLOYMENT_TARGET"] = str(mac_osx_version)
-            all_flags = ["-stdlib=libc++", "-mmacosx-version-min=10.7"]
-            if has_flag(self.compiler, [all_flags[0]]):
-                self.c_opts["unix"] += [all_flags[0]]
-            elif has_flag(self.compiler, all_flags):
-                self.c_opts["unix"] += all_flags
-            else:
-                raise RuntimeError(
-                    "libc++ is needed! Failed to compile with {} and {}.".format(
-                        " ".join(all_flags), all_flags[0]
-                    )
-                )
         ct = self.compiler.compiler_type
-        opts = self.c_opts.get(ct, [])
-        extra_link_args = []
+        opts = list(self.c_opts.get(ct, []))
+        extra_link_args = ["-pthread"] if ct == "unix" else []
 
         if coverage:
             coverage_option = "--coverage"
+            opts = [flag for flag in opts if flag != "-O3"]
+            opts.extend(["-O0", "-fno-inline"])
             opts.append(coverage_option)
             extra_link_args.append(coverage_option)
 
@@ -149,11 +128,7 @@ class BuildExt(build_ext):
 
 
 def _get_readme():
-    """
-    Use pandoc to generate rst from md.
-    pandoc --from=markdown --to=rst --output=python/README.rst python/README.md
-    """
-    with io.open("python/README.rst", encoding="utf-8") as fid:
+    with io.open("python/README.md", encoding="utf-8") as fid:
         return fid.read()
 
 
@@ -164,6 +139,7 @@ setup(
     author_email="celebio@fb.com",
     description="fasttext Python bindings",
     long_description=_get_readme(),
+    long_description_content_type="text/markdown",
     ext_modules=ext_modules,
     url="https://github.com/facebookresearch/fastText",
     license="MIT",
@@ -171,10 +147,15 @@ setup(
         "Development Status :: 3 - Alpha",
         "Intended Audience :: Developers",
         "Intended Audience :: Science/Research",
-        "Programming Language :: Python :: 2.7",
-        "Programming Language :: Python :: 3.4",
-        "Programming Language :: Python :: 3.5",
-        "Programming Language :: Python :: 3.6",
+        "Programming Language :: C++",
+        "Programming Language :: Python :: 3",
+        "Programming Language :: Python :: 3 :: Only",
+        "Programming Language :: Python :: 3.10",
+        "Programming Language :: Python :: 3.11",
+        "Programming Language :: Python :: 3.12",
+        "Programming Language :: Python :: 3.13",
+        "Programming Language :: Python :: 3.14",
+        "Programming Language :: Python :: Implementation :: CPython",
         "Topic :: Software Development",
         "Topic :: Scientific/Engineering",
         "Operating System :: Microsoft :: Windows",
@@ -182,6 +163,7 @@ setup(
         "Operating System :: Unix",
         "Operating System :: MacOS",
     ],
+    python_requires=">=3.10",
     install_requires=["numpy"],
     cmdclass={"build_ext": BuildExt},
     packages=[

@@ -82,9 +82,8 @@ class _FastText:
     create objects. It will be returned by functions such as load_model or
     train.
 
-    In general this API assumes to be given only unicode for Python2 and the
-    Python3 equvalent called str for any string-like arguments. All unicode
-    strings are then encoded as UTF-8 and fed to the fastText C++ API.
+    This API expects Python str values for string-like arguments. Strings are
+    encoded as UTF-8 and passed to the fastText C++ API.
     """
 
     def __init__(self, model_path=None, args=None):
@@ -459,7 +458,7 @@ unsupervised_default = {
     "wordNgrams": 1,
     "loss": "ns",
     "bucket": 2000000,
-    "thread": multiprocessing.cpu_count() - 1,
+    "thread": max(1, multiprocessing.cpu_count() - 1),
     "lrUpdateRate": 100,
     "t": 1e-4,
     "label": "__label__",
