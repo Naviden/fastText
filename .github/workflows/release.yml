@@ -18,6 +18,8 @@ jobs:
       - name: Match tag to package version
         run: |
           package_version="$(python setup.py --version)"
+          cmake_version="$(sed -nE 's/project\(fasttext VERSION ([0-9.]+).*/\1/p' CMakeLists.txt)"
+          test "${package_version}" = "${cmake_version}"
           test "v${package_version}" = "${GITHUB_REF_NAME}"
 
   build:
@@ -44,11 +46,11 @@ jobs:
 
   pypi:
     name: Publish to PyPI
-    needs: build
+    needs: [build, github-release]
     runs-on: ubuntu-latest
     environment:
       name: pypi
-      url: https://pypi.org/project/fasttext/
+      url: https://pypi.org/project/fasttext-modern/
     permissions:
       id-token: write
 

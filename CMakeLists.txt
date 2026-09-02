@@ -5,7 +5,7 @@
 # LICENSE file in the root directory of this source tree.
 
 cmake_minimum_required(VERSION 3.16)
-project(fasttext VERSION 0.9.2 LANGUAGES CXX)
+project(fasttext VERSION 0.10.0 LANGUAGES CXX)
 
 include(GNUInstallDirs)
 find_package(Threads REQUIRED)

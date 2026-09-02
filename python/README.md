@@ -1,4 +1,10 @@
-# fastText [![CircleCI](https://circleci.com/gh/facebookresearch/fastText/tree/master.svg?style=svg)](https://circleci.com/gh/facebookresearch/fastText/tree/master)
+# fastText Modern Python bindings
+
+> This is the Python guide for the independently maintained fastText Modern
+> fork. It is not affiliated with or endorsed by Meta. The import remains
+> compatible with upstream fastText. See the
+> [fork policy](https://github.com/Naviden/fastText/blob/main/FORK.md) for
+> attribution and scope.
 
 [fastText](https://fasttext.cc/) is a library for efficient learning of word representations and sentence classification.
 
@@ -31,16 +37,14 @@ It requires a compiler with C\++17 support, [Python](https://www.python.org/)
 
 To install the latest release, you can do :
 ```bash
-$ pip install fasttext
+$ python -m pip install fasttext-modern
 ```
 
 or, to get the latest development version of fasttext, you can install from our github repository :
 ```bash
-$ git clone https://github.com/facebookresearch/fastText.git
+$ git clone https://github.com/Naviden/fastText.git
 $ cd fastText
-$ sudo pip install .
-$ # or :
-$ sudo python setup.py install
+$ python -m pip install .
 ```
 
 # Usage overview
@@ -164,7 +168,7 @@ For further reading on quantization, you can refer to [this paragraph from our b
 
 ## IMPORTANT: Preprocessing data / encoding conventions
 
-In general it is important to properly preprocess your data. In particular our example scripts in the [root folder](https://github.com/facebookresearch/fastText) do this.
+In general it is important to properly preprocess your data. In particular our example scripts in the [root folder](https://github.com/Naviden/fastText) do this.
 
 fastText assumes UTF-8 encoded text. All text must be Python `str` values. The
 passed text is [encoded as UTF-8 by pybind11](https://pybind11.readthedocs.io/en/stable/advanced/cast/strings.html)
@@ -181,15 +185,15 @@ fastText will tokenize (split text into pieces) based on the following ASCII cha
 * formfeed
 * the null character
 
-The newline character is used to delimit lines of text. In particular, the EOS token is appended to a line of text if a newline character is encountered. The only exception is if the number of tokens exceeds the MAX\_LINE\_SIZE constant as defined in the [Dictionary header](https://github.com/facebookresearch/fastText/blob/master/src/dictionary.h). This means if you have text that is not separate by newlines, such as the [fil9 dataset](http://mattmahoney.net/dc/textdata), it will be broken into chunks with MAX\_LINE\_SIZE of tokens and the EOS token is not appended.
+The newline character is used to delimit lines of text. In particular, the EOS token is appended to a line of text if a newline character is encountered. The only exception is if the number of tokens exceeds the MAX\_LINE\_SIZE constant as defined in the [Dictionary header](https://github.com/Naviden/fastText/blob/main/src/dictionary.h). This means if you have text that is not separate by newlines, such as the [fil9 dataset](http://mattmahoney.net/dc/textdata), it will be broken into chunks with MAX\_LINE\_SIZE of tokens and the EOS token is not appended.
 
-The length of a token is the number of UTF-8 characters by considering the [leading two bits of a byte](https://en.wikipedia.org/wiki/UTF-8#Description) to identify [subsequent bytes of a multi-byte sequence](https://github.com/facebookresearch/fastText/blob/master/src/dictionary.cc). Knowing this is especially important when choosing the minimum and maximum length of subwords. Further, the EOS token (as specified in the [Dictionary header](https://github.com/facebookresearch/fastText/blob/master/src/dictionary.h)) is considered a character and will not be broken into subwords.
+The length of a token is the number of UTF-8 characters by considering the [leading two bits of a byte](https://en.wikipedia.org/wiki/UTF-8#Description) to identify [subsequent bytes of a multi-byte sequence](https://github.com/Naviden/fastText/blob/main/src/dictionary.cc). Knowing this is especially important when choosing the minimum and maximum length of subwords. Further, the EOS token (as specified in the [Dictionary header](https://github.com/Naviden/fastText/blob/main/src/dictionary.h)) is considered a character and will not be broken into subwords.
 
 ## More examples
 
-In order to have a better knowledge of fastText models, please consider the main [README](https://github.com/facebookresearch/fastText/blob/master/README.md) and in particular [the tutorials on our website](https://fasttext.cc/docs/en/supervised-tutorial.html).
+In order to have a better knowledge of fastText models, please consider the main [README](https://github.com/Naviden/fastText/blob/main/README.md) and the [upstream tutorials](https://fasttext.cc/docs/en/supervised-tutorial.html).
 
-You can find further python examples in [the doc folder](https://github.com/facebookresearch/fastText/tree/master/python/doc/examples).
+You can find further python examples in [the doc folder](https://github.com/Naviden/fastText/tree/main/python/doc/examples).
 
 As with any package you can get help on any Python function using the help function.
 
@@ -319,10 +323,10 @@ model['king']       # equivalent to model.get_word_vector('king')
 ```
 
 
-Join the fastText community
----------------------------
+Support and community
+---------------------
 
-- [Facebook page](https://www.facebook.com/groups/1174547215919768)
-- [Stack overflow](https://stackoverflow.com/questions/tagged/fasttext)
-- [Google group](https://groups.google.com/forum/#!forum/fasttext-library)
-- [GitHub](https://github.com/facebookresearch/fastText)
+- [fastText Modern issues](https://github.com/Naviden/fastText/issues)
+- [Upstream fastText](https://github.com/facebookresearch/fastText)
+- [Stack Overflow](https://stackoverflow.com/questions/tagged/fasttext)
+- [Upstream Google group](https://groups.google.com/forum/#!forum/fasttext-library)
