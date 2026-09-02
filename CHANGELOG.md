@@ -2,7 +2,7 @@
 
 All notable changes to fastText Modern are documented here.
 
-## [0.10.0] - Unreleased
+## [0.10.0] - 2026-09-02
 
 ### Added
 
