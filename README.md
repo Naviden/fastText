@@ -1,10 +1,20 @@
-# fastText
-[fastText](https://fasttext.cc/) is a library for efficient learning of word representations and sentence classification.
+# fastText Modern
 
-[![CircleCI](https://circleci.com/gh/facebookresearch/fastText/tree/master.svg?style=svg)](https://circleci.com/gh/facebookresearch/fastText/tree/master)
+[![Python compatibility](https://github.com/Naviden/fastText/actions/workflows/python-compatibility.yml/badge.svg)](https://github.com/Naviden/fastText/actions/workflows/python-compatibility.yml)
+[![Native build](https://github.com/Naviden/fastText/actions/workflows/native-build.yml/badge.svg)](https://github.com/Naviden/fastText/actions/workflows/native-build.yml)
+[![Build distributions](https://github.com/Naviden/fastText/actions/workflows/wheels.yml/badge.svg)](https://github.com/Naviden/fastText/actions/workflows/wheels.yml)
+
+> **Community fork:** fastText Modern is independently maintained and is not
+> affiliated with or endorsed by Meta. It is based on Meta's
+> [fastText](https://github.com/facebookresearch/fastText), with the original
+> copyright notices and MIT license preserved. See [FORK.md](FORK.md) for the
+> maintenance and attribution policy.
+
+[fastText](https://fasttext.cc/) is a library for efficient learning of word representations and sentence classification.
 
 ## Table of contents
 
+* [Install the Python package](#install-the-python-package)
 * [Resources](#resources)
    * [Models](#models)
    * [Supplementary data](#supplementary-data)
@@ -28,7 +38,23 @@
 * [Join the fastText community](#join-the-fasttext-community)
 * [License](#license)
 
+## Install the Python package
+
+The distribution has a distinct name to avoid confusion with the upstream
+package, while retaining the compatible `fasttext` import:
+
+```bash
+python -m pip install fasttext-modern
+```
+
+```python
+import fasttext
+```
+
 ## Resources
+
+The models and datasets linked below are external assets and may have terms
+separate from this repository's MIT License.
 
 ### Models
 - Recent state-of-the-art [English word vectors](https://fasttext.cc/docs/en/english-vectors.html).
@@ -76,28 +102,30 @@ We discuss building the latest stable version of fastText.
 
 ### Getting the source code
 
-You can find our [latest stable release](https://github.com/facebookresearch/fastText/releases/latest) in the usual place.
+You can find this fork's [latest stable release](https://github.com/Naviden/fastText/releases/latest) in the usual place.
 
-There is also the master branch that contains all of our most recent work, but comes along with all the usual caveats of an unstable branch. You might want to use this if you are a developer or power-user.
+There is also the main branch that contains the most recent work, but comes
+with the usual caveats of a development branch.
 
 ### Building fastText using make (preferred)
 
 ```
-$ wget https://github.com/facebookresearch/fastText/archive/v0.9.2.zip
-$ unzip v0.9.2.zip
-$ cd fastText-0.9.2
+$ wget https://github.com/Naviden/fastText/archive/v0.10.0.zip
+$ unzip v0.10.0.zip
+$ cd fastText-0.10.0
 $ make
 ```
 
 This will produce object files for all the classes as well as the main binary `fasttext`.
-If you do not plan on using the default system-wide compiler, update the two macros defined at the beginning of the Makefile (CC and INCLUDES).
+To select a non-default compiler, set the `CXX` make variable.
 
 ### Building fastText using cmake
 
-For now this is not part of a release, so you will need to clone the master branch.
+You can build the native library from a release archive or clone the main
+branch.
 
 ```
-$ git clone https://github.com/facebookresearch/fastText.git
+$ git clone https://github.com/Naviden/fastText.git
 $ cd fastText
 $ mkdir build && cd build && cmake ..
 $ make && make install
@@ -107,10 +135,11 @@ This will create the fasttext binary and also all relevant libraries (shared, st
 
 ### Building fastText for Python
 
-For now this is not part of a release, so you will need to clone the master branch.
+You can install the Python bindings from PyPI or build them from the main
+branch.
 
 ```
-$ git clone https://github.com/facebookresearch/fastText.git
+$ git clone https://github.com/Naviden/fastText.git
 $ cd fastText
 $ pip install .
 ```
@@ -322,12 +351,13 @@ Please cite [1](#enriching-word-vectors-with-subword-information) if using this 
 
 ## Join the fastText community
 
-* Facebook page: https://www.facebook.com/groups/1174547215919768
-* Google group: https://groups.google.com/forum/#!forum/fasttext-library
-* Contact: [egrave@fb.com](mailto:egrave@fb.com), [bojanowski@fb.com](mailto:bojanowski@fb.com), [ajoulin@fb.com](mailto:ajoulin@fb.com), [tmikolov@fb.com](mailto:tmikolov@fb.com)
-
-See the CONTRIBUTING file for information about how to help out.
+For this fork, use the [issue tracker](https://github.com/Naviden/fastText/issues)
+and see [CONTRIBUTING.md](CONTRIBUTING.md) before proposing a change. The
+[upstream project](https://github.com/facebookresearch/fastText) and its
+[Google group](https://groups.google.com/forum/#!forum/fasttext-library) remain
+useful resources for the wider fastText community.
 
 ## License
 
-fastText is MIT-licensed.
+fastText Modern is MIT-licensed. The original license and copyright notice are
+preserved in [LICENSE](LICENSE).

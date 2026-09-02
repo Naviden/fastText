@@ -19,8 +19,13 @@ import setuptools
 import os
 import io
 
-__version__ = "0.9.2"
 FASTTEXT_SRC = "src"
+VERSION_FILE = "python/fasttext_module/fasttext/_version.py"
+
+version_namespace = {}
+with io.open(VERSION_FILE, encoding="utf-8") as version_file:
+    exec(compile(version_file.read(), VERSION_FILE, "exec"), version_namespace)
+__version__ = version_namespace["__version__"]
 
 # Based on https://github.com/pybind/python_example
 
@@ -133,18 +138,24 @@ def _get_readme():
 
 
 setup(
-    name="fasttext",
+    name="fasttext-modern",
     version=__version__,
-    author="Onur Celebi",
-    author_email="celebio@fb.com",
-    description="fasttext Python bindings",
+    author="Onur Celebi and fastText contributors",
+    maintainer="Naviden",
+    description="Community-maintained fastText Python bindings",
     long_description=_get_readme(),
     long_description_content_type="text/markdown",
     ext_modules=ext_modules,
-    url="https://github.com/facebookresearch/fastText",
+    url="https://github.com/Naviden/fastText",
+    project_urls={
+        "Source": "https://github.com/Naviden/fastText",
+        "Issues": "https://github.com/Naviden/fastText/issues",
+        "Changelog": "https://github.com/Naviden/fastText/blob/main/CHANGELOG.md",
+        "Upstream": "https://github.com/facebookresearch/fastText",
+    },
     license="MIT",
     classifiers=[
-        "Development Status :: 3 - Alpha",
+        "Development Status :: 4 - Beta",
         "Intended Audience :: Developers",
         "Intended Audience :: Science/Research",
         "Programming Language :: C++",
